@@ -1,7 +1,9 @@
 import Link from "next/link";
 import { Card, CardContent } from "@/components/ui/card";
-import { mockMealHistory } from "@/lib/nutrition/mock-data";
+import { requireUserId } from "@/lib/auth/actions";
+import { getMealHistory } from "@/lib/db/meals";
 import { formatDayLabel } from "@/lib/nutrition/calculations";
+import { toMealDTO } from "@/lib/nutrition/mappers";
 import { MEAL_TYPE_LABELS, type Meal } from "@/types/nutrition";
 
 const MEAL_EMOJI: Record<Meal["mealType"], string> = {
@@ -22,8 +24,10 @@ function groupByDay(meals: Meal[]): Array<[string, Meal[]]> {
   );
 }
 
-export default function MealsHistoryPage() {
-  const groups = groupByDay(mockMealHistory);
+export default async function MealsHistoryPage() {
+  const userId = await requireUserId();
+  const mealRows = await getMealHistory(userId);
+  const groups = groupByDay(mealRows.map(toMealDTO));
 
   return (
     <main className="flex flex-1 flex-col gap-6 px-4 pt-6">

@@ -2,7 +2,6 @@ import type { Metadata, Viewport } from "next";
 import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 import { ThemeProvider } from "@/components/theme-provider";
-import { BottomNav } from "@/components/layout/bottom-nav";
 import { Toaster } from "@/components/ui/sonner";
 
 const geistSans = Geist({
@@ -44,10 +43,7 @@ export default function RootLayout({ children }: LayoutProps<"/">) {
           enableSystem
           disableTransitionOnChange
         >
-          <div className="mx-auto flex w-full max-w-md flex-1 flex-col pb-20">
-            {children}
-          </div>
-          <BottomNav />
+          {children}
           <Toaster />
         </ThemeProvider>
       </body>

@@ -40,6 +40,13 @@ export interface FoodAnalysisResult {
   };
 }
 
+export const DEFAULT_NUTRITION_GOAL: NutritionGoal = {
+  calories: 2200,
+  protein: 160,
+  carbs: 220,
+  fat: 70,
+};
+
 export const MEAL_TYPE_LABELS: Record<MealType, string> = {
   breakfast: "Desayuno",
   lunch: "Almuerzo",

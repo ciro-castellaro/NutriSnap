@@ -8,6 +8,7 @@ import { AnalyzingStep } from "@/components/meals/analyzing-step";
 import { ReviewStep } from "@/components/meals/review-step";
 import { mockAnalysisResult } from "@/lib/nutrition/mock-data";
 import { generateId, inferMealType } from "@/lib/nutrition/calculations";
+import { saveMealAction } from "@/lib/nutrition/actions";
 import type { FoodItem, MealType } from "@/types/nutrition";
 
 type Step = "capture" | "analyzing" | "review";
@@ -41,13 +42,29 @@ export default function NewMealPage() {
     }, ANALYSIS_DELAY_MS);
   }
 
-  function handleSave() {
+  async function handleSave() {
     setSaving(true);
-    // Simula el guardado. Se reemplaza por la persistencia real contra la base de datos.
-    setTimeout(() => {
-      toast.success("Comida guardada");
-      router.push("/");
-    }, 500);
+    const result = await saveMealAction({
+      mealType,
+      foods: foods.map(({ name, grams, calories, protein, carbs, fat, confidence }) => ({
+        name,
+        grams,
+        calories,
+        protein,
+        carbs,
+        fat,
+        confidence,
+      })),
+    });
+
+    if (result.error) {
+      toast.error(result.error);
+      setSaving(false);
+      return;
+    }
+
+    toast.success("Comida guardada");
+    router.push("/");
   }
 
   if (step === "capture") {

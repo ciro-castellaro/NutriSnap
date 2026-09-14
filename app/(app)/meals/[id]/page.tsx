@@ -1,6 +1,8 @@
 import { notFound } from "next/navigation";
 import { Card, CardContent } from "@/components/ui/card";
-import { mockMealHistory } from "@/lib/nutrition/mock-data";
+import { requireUserId } from "@/lib/auth/actions";
+import { getMealById } from "@/lib/db/meals";
+import { toMealDTO } from "@/lib/nutrition/mappers";
 import { MEAL_TYPE_LABELS } from "@/types/nutrition";
 
 export default async function MealDetailPage({
@@ -9,9 +11,12 @@ export default async function MealDetailPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = await params;
-  const meal = mockMealHistory.find((m) => m.id === id);
+  const userId = await requireUserId();
+  const mealRow = await getMealById(userId, id);
 
-  if (!meal) notFound();
+  if (!mealRow) notFound();
+
+  const meal = toMealDTO(mealRow);
 
   return (
     <main className="flex flex-1 flex-col gap-4 px-4 pt-6">
