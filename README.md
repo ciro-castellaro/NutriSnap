@@ -1,45 +1,45 @@
 # AI Calorie Tracker
 
-Aplicación web mobile-first para registrar comidas y estimar calorías y macronutrientes a partir de una foto, usando IA multimodal.
+Mobile-first web application for tracking meals and estimating calories and macronutrients from a photo using multimodal AI.
 
 ## Stack
 
-- Next.js (App Router) + TypeScript
-- Tailwind CSS + shadcn/ui
-- PostgreSQL + Prisma
-- Auth.js (NextAuth)
-- IA multimodal con fallback entre proveedores gratuitos (Gemini → OpenRouter → Groq)
-- PWA instalable desde el navegador del celular
+* Next.js (App Router) + TypeScript
+* Tailwind CSS + shadcn/ui
+* PostgreSQL + Prisma
+* Auth.js (NextAuth)
+* Multimodal AI with fallback between free providers (Gemini → OpenRouter → Groq)
+* Installable PWA from a mobile browser
 
-## Requisitos
+## Requirements
 
-- Node.js 20.9+
-- PostgreSQL corriendo localmente
+* Node.js 20.9+
+* PostgreSQL running locally
 
-## Getting started
+## Getting Started
 
 ```bash
 npm install
-cp .env.example .env.local   # completar las variables (DB, auth, claves de IA)
+cp .env.example .env.local   # fill in the required variables (DB, auth, AI API keys)
 npm run dev
 ```
 
-Abrir [http://localhost:3000](http://localhost:3000).
+Open http://localhost:3000.
 
-## Estructura
+## Project Structure
 
 ```text
-app/            # rutas (App Router): dashboard, meals, settings, api/analyze-food
-components/     # componentes UI (ui/, meals/, nutrition/, dashboard/)
-lib/            # lógica de negocio: ai/, db/, auth/, nutrition/
-prisma/         # schema y migraciones
-types/          # tipos compartidos
+app/            # routes (App Router): dashboard, meals, settings, api/analyze-food
+components/     # UI components (ui/, meals/, nutrition/, dashboard/)
+lib/            # business logic: ai/, db/, auth/, nutrition/
+prisma/         # schema and migrations
+types/          # shared types
 ```
 
 ## Scripts
 
 ```bash
-npm run dev      # servidor de desarrollo
-npm run build    # build de producción
+npm run dev      # development server
+npm run build    # production build
 npm run lint     # ESLint
 ```
