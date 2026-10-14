@@ -20,7 +20,7 @@ Mobile-first web application for tracking meals and estimating calories and macr
 
 ```bash
 npm install
-cp .env.example .env.local   # fill in the required variables (DB, auth, AI API keys)
+cp .env.example .env   # fill in the required variables (DB, auth, AI API keys)
 npm run dev
 ```
 
