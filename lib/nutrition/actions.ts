@@ -3,7 +3,7 @@
 import { z } from "zod";
 import { revalidatePath } from "next/cache";
 import { requireUserId } from "@/lib/auth/actions";
-import { createMeal } from "@/lib/db/meals";
+import { createMeal, updateMeal } from "@/lib/db/meals";
 import { updateGoal } from "@/lib/db/nutrition-goals";
 
 const foodInputSchema = z.object({
@@ -36,6 +36,29 @@ export async function saveMealAction(input: unknown): Promise<SaveMealResult> {
 
   revalidatePath("/");
   revalidatePath("/meals");
+  return {};
+}
+
+const updateMealSchema = z.object({
+  mealId: z.string().trim().min(1),
+  foods: z.array(foodInputSchema).min(1),
+});
+
+export async function updateMealAction(input: unknown): Promise<SaveMealResult> {
+  const parsed = updateMealSchema.safeParse(input);
+  if (!parsed.success) {
+    return { error: "No pudimos guardar los cambios: revisá los alimentos cargados." };
+  }
+
+  const userId = await requireUserId();
+  const updated = await updateMeal(userId, parsed.data.mealId, parsed.data.foods);
+  if (!updated) {
+    return { error: "No encontramos esa comida." };
+  }
+
+  revalidatePath("/");
+  revalidatePath("/meals");
+  revalidatePath(`/meals/${parsed.data.mealId}`);
   return {};
 }
 

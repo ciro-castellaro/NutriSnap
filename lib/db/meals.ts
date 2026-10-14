@@ -56,8 +56,8 @@ export async function getMealById(userId: string, id: string) {
   });
 }
 
-export async function createMeal(userId: string, input: CreateMealInput) {
-  const totals = input.foods.reduce(
+function sumFoodInputTotals(foods: CreateMealFoodInput[]) {
+  return foods.reduce(
     (acc, food) => ({
       calories: acc.calories + food.calories,
       protein: acc.protein + food.protein,
@@ -66,6 +66,10 @@ export async function createMeal(userId: string, input: CreateMealInput) {
     }),
     { calories: 0, protein: 0, carbs: 0, fat: 0 }
   );
+}
+
+export async function createMeal(userId: string, input: CreateMealInput) {
+  const totals = sumFoodInputTotals(input.foods);
 
   return prisma.meal.create({
     data: {
@@ -79,5 +83,31 @@ export async function createMeal(userId: string, input: CreateMealInput) {
       foods: { create: input.foods },
     },
     include: { foods: true },
+  });
+}
+
+export async function updateMeal(
+  userId: string,
+  mealId: string,
+  foods: CreateMealFoodInput[]
+) {
+  const existing = await prisma.meal.findFirst({ where: { id: mealId, userId } });
+  if (!existing) return null;
+
+  const totals = sumFoodInputTotals(foods);
+
+  return prisma.$transaction(async (tx) => {
+    await tx.foodItem.deleteMany({ where: { mealId } });
+    return tx.meal.update({
+      where: { id: mealId },
+      data: {
+        totalCalories: totals.calories,
+        totalProtein: totals.protein,
+        totalCarbs: totals.carbs,
+        totalFat: totals.fat,
+        foods: { create: foods },
+      },
+      include: { foods: true },
+    });
   });
 }

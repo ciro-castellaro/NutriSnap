@@ -1,7 +1,6 @@
-import { requireUserId, logoutAction } from "@/lib/auth/actions";
+import { requireUserId } from "@/lib/auth/actions";
 import { getOrCreateGoal } from "@/lib/db/nutrition-goals";
 import { GoalsForm } from "@/components/nutrition/goals-form";
-import { Button } from "@/components/ui/button";
 
 export default async function SettingsPage() {
   const userId = await requireUserId();
@@ -17,12 +16,6 @@ export default async function SettingsPage() {
       </div>
 
       <GoalsForm goal={goal} />
-
-      <form action={logoutAction}>
-        <Button type="submit" variant="outline" className="w-full">
-          Cerrar sesión
-        </Button>
-      </form>
     </main>
   );
 }
