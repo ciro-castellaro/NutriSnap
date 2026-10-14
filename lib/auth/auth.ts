@@ -6,6 +6,7 @@ import { credentialsSchema } from "@/lib/auth/credentials-schema";
 
 export const { handlers, auth, signIn, signOut } = NextAuth({
   session: { strategy: "jwt" },
+  trustHost: true,
   pages: {
     signIn: "/login",
   },

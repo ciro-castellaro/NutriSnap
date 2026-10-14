@@ -6,14 +6,11 @@ import { toast } from "sonner";
 import { PhotoCaptureStep } from "@/components/meals/photo-capture-step";
 import { AnalyzingStep } from "@/components/meals/analyzing-step";
 import { ReviewStep } from "@/components/meals/review-step";
-import { mockAnalysisResult } from "@/lib/nutrition/mock-data";
 import { generateId, inferMealType } from "@/lib/nutrition/calculations";
 import { saveMealAction } from "@/lib/nutrition/actions";
-import type { FoodItem, MealType } from "@/types/nutrition";
+import type { FoodAnalysisResult, FoodItem, MealType } from "@/types/nutrition";
 
 type Step = "capture" | "analyzing" | "review";
-
-const ANALYSIS_DELAY_MS = 2200;
 
 export default function NewMealPage() {
   const router = useRouter();
@@ -29,17 +26,34 @@ export default function NewMealPage() {
     };
   }, [imageUrl]);
 
-  function handlePhotoSelected(file: File) {
+  async function handlePhotoSelected(file: File) {
     setImageUrl(URL.createObjectURL(file));
     setStep("analyzing");
 
-    // Simula la llamada a la IA. Se reemplaza por analyzeFood() en la integración real.
-    setTimeout(() => {
-      setFoods(
-        mockAnalysisResult.foods.map((food) => ({ ...food, id: generateId() }))
-      );
+    try {
+      const formData = new FormData();
+      formData.set("image", file);
+
+      const response = await fetch("/api/analyze-food", {
+        method: "POST",
+        body: formData,
+      });
+
+      const data = await response.json();
+
+      if (!response.ok) {
+        throw new Error(data.error || "No pudimos analizar la imagen.");
+      }
+
+      const analysis = data as FoodAnalysisResult;
+      setFoods(analysis.foods.map((food) => ({ ...food, id: generateId() })));
       setStep("review");
-    }, ANALYSIS_DELAY_MS);
+    } catch (error) {
+      toast.error(
+        error instanceof Error ? error.message : "No pudimos analizar la imagen."
+      );
+      setStep("capture");
+    }
   }
 
   async function handleSave() {
